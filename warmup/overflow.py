@@ -5,55 +5,58 @@ PORT = 3200
 
 DAMN_FLAG = "Trying to print the damn flag!!! \n"
 LETTER = "Z"
-START = 93_000
-END = 100_000
+START = 100_100
+END = 101_000
+INCREMENT = 1
 
 data = b""
+attempts = 0
 failures = 0
 timeouts = 0
-res_lengths = []
+res_lens = []
 interesting = []
 
 try:
-    for i in range(START, END + 1):
+    for n in range(START, END + 1, INCREMENT):
+        attempts += 1
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(2)
+            s.settimeout(3)
             s.connect((HOST, PORT))
-            spam = LETTER * i + "\n"
-            sent = s.send(bytes(spam, "UTF-8"))
+            spam = LETTER * (n - 1) + "\n"
+            message = bytes(spam, "utf-8")
+            sent = s.send(message)  # for manual sanity check
             # print(f"{sent=}")
             try:
                 data = s.recv(1048576)
             except socket.timeout:
-                print(f"timeout i={i}")
+                print(f"timeout {n=}")
                 timeouts += 1
                 continue
-        res = data.decode("UTF-8")
-        res_lengths.append(len(res))
+        res = data.decode()
+        res_lens.append(len(res))
         res_letters = res.count(LETTER)
-        # filter spam and newlines for easier reading at glance
-        short_output = res.replace(LETTER, "").replace("\n", "")
+        # easier manual scanning of output
+        res_filtered = res.replace(LETTER, "").replace("\n", "")
         if res == f"{DAMN_FLAG}" or res == f"{DAMN_FLAG}\nNOOO! Wrong input: {spam}\n":
             failures += 1
             continue
         if res:
             if not "Wrong input" in res:
+                print(f"{n=} {res_letters=} {res}")
                 interesting.append(
                     {
-                        "i": i,
+                        "n": n,
                         "letters": res_letters,
                         "res": res,
                     }
                 )
             else:
-
-                print(f"i:{i} letters:{res_letters} res:{short_output}")
+                print(f"{n=} {res_letters=} {res_filtered=}")
 except KeyboardInterrupt:
-    print("aborted")
+    print("killed")
 finally:
-    print(
-        f"---completed:\ni:{i} failures:{failures} timeouts:{timeouts} avg_res_length: {sum(res_lengths) / len(res_lengths)}"
-    )
+    avg_res_length = sum(res_lens) / len(res_lens) if len(res_lens) > 0 else None
+    print(f"{n=} {attempts=} {failures=} {timeouts=} {avg_res_length=}")
     print("interesting:")
     for e in interesting:
-        print(f"i:{e.i} letters:{e.letters} res:{e.res}")
+        print(repr(e))
