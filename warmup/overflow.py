@@ -9,7 +9,6 @@ START = 95_000
 END = 100_000
 INCREMENT = 1
 
-data = b""
 attempts = 0
 failures = 0
 timeouts = 0
@@ -19,6 +18,7 @@ interesting = []
 try:
     for n in range(START, END + 1, INCREMENT):
         attempts += 1
+        data = b""
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(2)
             s.connect((HOST, PORT))
