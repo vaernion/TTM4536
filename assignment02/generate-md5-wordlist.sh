@@ -7,9 +7,6 @@ outfile="megalist.txt"
 outfile_md5="megalist_md5.txt"
 echo -n "" > $outfile
 
-j=0
-
-
 for i in $( seq 0 $length ); do
     for j in $( seq 0 $length ); do
         pw1=${pswdlist[$i]}
@@ -20,6 +17,3 @@ for i in $( seq 0 $length ); do
         echo $qq >> $outfile_md5
     done
 done
-
-
-
