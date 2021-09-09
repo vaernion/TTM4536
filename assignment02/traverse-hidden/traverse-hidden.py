@@ -23,7 +23,7 @@ def main():
 
     links = find_links(soup)
 
-    with tqdm(total=26 ** 3) as pbar:
+    with tqdm(total=(26 ** 3 + 26 ** 2 + 26)) as pbar:
         readme_links, other_links = traverse(links, BASE_URL, pbar)
         print(f"readmes: {len(readme_links)}")
         print(f"interesting: {len(other_links)}")
