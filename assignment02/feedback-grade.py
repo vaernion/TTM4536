@@ -3,20 +3,10 @@
 
 # from wolframalpha asking next prime after 2^64
 NEXT_PRIME = 18446744073709551629
+p = NEXT_PRIME  # Next_Prime(2^64)
 
 flag3 = "24bea01a261043e2e5f504594e360ec5"
 flag3int = int(flag3, 16)  # # 48841991508627492082512072253508030149
-
-# def is_prime(x):
-#     return all(x % i for i in range(2, x))
-# def next_prime(x):
-#     return min([a for a in range(x + 1, 2 * x) if is_prime(a)])
-# print(next_prime(2 ** 64))
-
-grade = 0  # unknown, goal to find
-grade_base = 2
-
-p = NEXT_PRIME  # Next_Prime(2^64)
 right_side = flag3int % (2 ** 64)  # 16570155185590374085
 
 print(f"{right_side=} {p=}")
