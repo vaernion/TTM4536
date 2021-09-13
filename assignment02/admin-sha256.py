@@ -1,51 +1,48 @@
-import random
+import itertools
 import string
 from hashlib import sha256
 
-CHARS = string.ascii_letters + "0123456789"
-prefix = "gathorhe"
-flag07rightmost = "daebda86"
-SUFFIX_MAX_LENGTH = 2
+# CHARS = string.ascii_letters + string.digits
+CHARS = string.ascii_letters + string.digits + string.punctuation
+# CHARS = string.hexdigits
+# CHARS = string.ascii_lowercase
+PREFIX = "gathorhe"
+FLAG7LAST8 = "daebda86"
+SUFFIX_MIN_LENGTH = 4
+SUFFIX_MAX_LENGTH = 8
 
-unique = set()
+print(len(CHARS), CHARS[0], CHARS[-1])
+print("." in CHARS)
+for char in CHARS:
+    print(char)
 
-print(CHARS)
+
+print(len("a"))
+print(len(string.punctuation))
 
 
 def main():
-    find_match()
-    print("unique inputs:", len(unique))
-
-
-def generate_suffix(length: int, seed: int):
-    output = ""
-    print(f"{length=} {seed=}")
-    for n in range(1, length + 1):
-        char = CHARS[int(seed / n) % len(CHARS)]
-        # print(f"{char=}")
-        output += char
-    print(output)
-    return output
+    match = find_match()
+    if match is not None:
+        print(f"MATCH: sha256({match[0]}) == {match[1]}")
+    else:
+        print("no match found")
 
 
 def find_match():
-    for postfix_length in range(1, SUFFIX_MAX_LENGTH + 1):
-        for seed in range(len(CHARS) ** postfix_length):
-            if seed != 77:
-                continue
-            suffix = generate_suffix(postfix_length, seed)
-            # print(suffix)
-            input = prefix + suffix
-            unique.add(input)
-            # print(input)
+    for postfix_length in range(SUFFIX_MIN_LENGTH, SUFFIX_MAX_LENGTH + 1):
+        for perm in itertools.permutations(CHARS, postfix_length):
+            suffix = "".join(perm)
+            password = PREFIX + suffix
 
             h = sha256()
-            x = h.update(bytes(input, "utf-8"))
-            x = h.hexdigest()
-            # print(x[-8:], flag07rightmost)
-            if x[-8:] == flag07rightmost:
-                print(f"MATCH: {x}")
-                break
+            h.update(bytes(password, "utf-8"))
+            hash = h.hexdigest()
+            # print(f"{password=} {hash=} x[-8:]={hash[-8:]}")
+
+            if hash[-8:] == FLAG7LAST8:
+                return (password, hash)
+    return None
 
 
 if __name__ == "__main__":
